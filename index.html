@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2F0EA">
+<title>Design Review</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F2F0EA; --card:#FBFAF8; --ink:#15150F; --mut:#8B897F;
+  --line:#E2DFD5; --lime:#D9F94C; --ok:#2F7D4F; --no:#B4402F; --rev:#B8792A;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  text-transform:uppercase;letter-spacing:.13em;font-size:10.5px;color:var(--mut)}
+.serif{font-family:Georgia,'Times New Roman',serif}
+
+/* ---------- chrome ---------- */
+header{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;
+  border-bottom:1px solid var(--line);background:var(--bg);flex:none}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--lime);
+  border:1.5px solid var(--ink);flex:none}
+header .brand{flex:1;min-width:0}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:var(--card);
+  font-size:15px;cursor:pointer;flex:none;color:var(--ink)}
+.iconbtn:active{transform:scale(.92)}
+
+main{flex:1;position:relative;overflow:hidden;min-height:0}
+.view{position:absolute;inset:0;display:none;flex-direction:column}
+.view.on{display:flex}
+
+/* ---------- workspace ---------- */
+#home{overflow-y:auto;padding:26px 18px calc(30px + env(safe-area-inset-bottom))}
+.hero{margin-bottom:30px}
+.hero h1{font-size:clamp(34px,10vw,46px);line-height:.98;letter-spacing:-.02em;font-weight:400;margin:12px 0 0}
+.hero h1 em{font-style:italic;display:block}
+.hero p{font-size:14px;color:#5F5D55;margin-top:14px;line-height:1.55;max-width:34ch}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
+.proj{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.proj .top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:ui-monospace,Menlo,monospace;
+  font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--mut);font-style:normal}
+.pill.live i{background:var(--lime);box-shadow:0 0 0 2px rgba(217,249,76,.35)}
+.pill.done i{background:var(--ok)}
+.proj h2{font-size:25px;font-weight:400;letter-spacing:-.015em;line-height:1.1}
+.thumbs{display:flex;gap:6px;margin:14px 0 4px}
+.thumbs div{flex:1;aspect-ratio:9/16;border-radius:7px;overflow:hidden;background:#E8E5DC}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.bar{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin:14px 0 8px}
+.bar span{display:block;height:100%;background:var(--lime);border-radius:2px;transition:width .4s}
+.proj .foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;
+  padding-top:12px;border-top:1px solid var(--line)}
+.open{background:var(--ink);color:#fff;border:none;border-radius:9px;padding:11px 18px;
+  font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.open:active{transform:scale(.95)}
+.open.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.glance{display:flex;gap:9px;margin-top:22px}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 12px}
+.stat b{display:block;font-size:26px;font-weight:400;font-family:Georgia,serif;line-height:1}
+.stat span{font-size:10.5px;color:var(--mut);font-family:ui-monospace,Menlo,monospace;
+  text-transform:uppercase;letter-spacing:.09em;margin-top:5px;display:block}
+
+/* ---------- review deck ---------- */
+#deck{padding:14px 16px 0}
+.deckhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex:none}
+.deckhead .back{border:1px solid var(--line);background:var(--card);border-radius:8px;
+  padding:7px 11px;font-size:12px;cursor:pointer;color:var(--ink)}
+.deckhead .t{flex:1;min-width:0}
+.deckhead h2{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage{flex:1;position:relative;min-height:0;margin-bottom:10px}
+.card{position:absolute;inset:0;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 8px 28px rgba(20,20,15,.10);touch-action:none;will-change:transform}
+.card .shot{flex:1;min-height:0;background:#EAE7DE;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;touch-action:none}
+.card .shot img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;
+  transform-origin:center center;will-change:transform}
+.zbadge{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:6;
+  background:rgba(21,21,15,.8);color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;
+  letter-spacing:.09em;text-transform:uppercase;padding:5px 6px 5px 12px;border-radius:20px;
+  display:none;align-items:center;gap:9px}
+.zbadge.on{display:inline-flex}
+.zreset{background:var(--lime);color:#1D2A06;border:none;border-radius:13px;padding:4px 10px;
+  font:inherit;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}
+.card .ph{position:absolute;font-size:11px;color:#A9A79E;font-family:ui-monospace,Menlo,monospace}
+.card .cap{padding:12px 14px;border-top:1px solid var(--line);display:flex;
+  align-items:center;justify-content:space-between;gap:10px;flex:none}
+.card .cap h3{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.stamp{position:absolute;top:18px;font-family:ui-monospace,Menlo,monospace;font-size:15px;
+  font-weight:700;letter-spacing:.1em;padding:7px 13px;border:2.5px solid;border-radius:8px;
+  opacity:0;transition:opacity .1s;pointer-events:none;background:rgba(251,250,248,.92)}
+.stamp.y{right:16px;color:var(--ok);border-color:var(--ok);transform:rotate(11deg)}
+.stamp.n{left:16px;color:var(--no);border-color:var(--no);transform:rotate(-11deg)}
+.acts{display:flex;gap:8px;padding-bottom:calc(12px + env(safe-area-inset-bottom));flex:none}
+.acts button{flex:1;padding:14px 6px;border:none;border-radius:12px;font-size:13.5px;
+  font-weight:650;cursor:pointer;transition:transform .12s}
+.acts button:active{transform:scale(.95)}
+.bNo{background:#F6DED9;color:var(--no);border:1px solid #EFCCC4!important}
+.bRev{background:#F7E9D2;color:var(--rev);border:1px solid #EEDCBD!important}
+.bYes{background:var(--lime);color:#1D2A06;border:1px solid #C9EA35!important}
+
+/* ---------- summary ---------- */
+#done{overflow-y:auto;padding:26px 18px calc(30px + env(safe-area-inset-bottom))}
+#done h1{font-size:32px;font-weight:400;letter-spacing:-.02em;line-height:1.05;margin:10px 0 6px}
+#done h1 em{font-style:italic}
+.lead{font-size:13.5px;color:#5F5D55;margin-bottom:22px}
+.grp{margin-bottom:20px}
+.grp>.mono{margin-bottom:9px;display:block}
+.row{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;background:var(--card);
+  border:1px solid var(--line);border-radius:11px;margin-bottom:7px}
+.row .sw{width:34px;height:34px;border-radius:7px;object-fit:cover;flex:none;background:#E8E5DC}
+.row .n{font-size:13.5px;font-weight:600}
+.row .c{font-size:12px;color:#6C6A61;margin-top:3px;line-height:1.45;white-space:pre-wrap}
+.send{display:flex;gap:8px;margin-top:20px}
+.send button{flex:1;padding:14px;border:none;border-radius:12px;font-weight:650;font-size:13.5px;cursor:pointer}
+.wa{background:#25D366;color:#fff}
+.cp{background:var(--ink);color:#fff}
+.restart{width:100%;margin-top:8px;padding:13px;border:1px solid var(--line);border-radius:12px;
+  background:transparent;color:var(--mut);font-weight:600;font-size:12.5px;cursor:pointer}
+.nudge{margin-top:22px;padding:14px;border:1px solid #E6DCAE;background:#FBF6DF;border-radius:13px;
+  font-size:12.5px;line-height:1.55;color:#6B6033}
+.nudge b{display:block;margin-bottom:3px;color:#4E4620}
+
+/* ---------- note sheet ---------- */
+.modal{position:fixed;inset:0;background:rgba(21,21,15,.5);z-index:99;display:none;align-items:flex-end}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;border-radius:20px 20px 0 0;
+  padding:22px 18px calc(22px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto}
+.sheet h3{font-size:19px;font-weight:400;font-family:Georgia,serif;margin-bottom:16px}
+.sheet label{display:block;margin-bottom:7px}
+.sheet textarea,.sheet select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;
+  font-size:16px;font-family:inherit;background:#fff;color:var(--ink);margin-bottom:15px;
+  -webkit-user-select:text;user-select:text}
+.sheet textarea{min-height:104px;resize:vertical}
+.sheet textarea:focus,.sheet select:focus{outline:none;border-color:var(--ink)}
+.sheet .btns{display:flex;gap:9px}
+.sheet .btns button{flex:1;padding:14px;border:none;border-radius:12px;font-weight:650;font-size:14px;cursor:pointer}
+.cancel{background:#EDEAE1;color:#55534B}
+.save{background:var(--ink);color:#fff}
+
+@media(min-width:720px){
+  #home,#done{max-width:760px;margin:0 auto;width:100%}
+  .stage{max-width:440px;margin:0 auto;width:100%}
+  .acts{max-width:440px;margin:0 auto;width:100%}
+  .projects{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .proj{margin-bottom:0}
+}
+
+/* hub */
+#hub{overflow-y:auto;padding:26px 18px calc(30px + env(safe-area-inset-bottom))}
+a.open{text-decoration:none}
+.proj .meta{display:flex;gap:10px;flex-wrap:wrap}
+@media(min-width:720px){#hub{max-width:760px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <span class="dot"></span>
+  <div class="brand"><div class="mono">Webook / Review</div></div>
+</header>
+<main>
+  <section class="view on" id="hub">
+    <div class="hero">
+      <div class="mono">webook.com · Design approvals</div>
+      <h1 class="serif">Everything awaiting<em>your call.</em></h1>
+      <p>Each presentation is its own review. Open one, swipe through, and send your notes — progress is saved on this phone.</p>
+    </div>
+    <div class="sec"><span class="mono">Presentations</span><span class="mono" id="hubCount"></span></div>
+    <div class="projects" id="list"></div>
+    <div class="sec" style="margin-top:26px"><span class="mono">Across everything</span></div>
+    <div class="glance">
+      <div class="stat"><b id="gY">0</b><span>Approved</span></div>
+      <div class="stat"><b id="gR">0</b><span>Revise</span></div>
+      <div class="stat"><b id="gN">0</b><span>Passed on</span></div>
+    </div>
+  </section>
+</main>
+<script>
+const SUBJECTS = [{"folder": "app-icon-guidelines", "name": "App Icon Guidelines", "store": "webook_review_app-icon-guidelines", "keys": ["directions-001", "directions-002", "directions-003", "directions-004", "directions-005"], "total": 5, "thumbs": ["app-icon-guidelines/index_files/directions-001-t.jpg", "app-icon-guidelines/index_files/directions-002-t.jpg", "app-icon-guidelines/index_files/directions-003-t.jpg", "app-icon-guidelines/index_files/directions-004-t.jpg"], "tag": "Sub-product icons · 5 designs"}, {"folder": "hotel-airport-advertising", "name": "Hotel & Airport Advertising", "store": "webook_review_advertising-opps", "keys": ["advertising-002", "advertising-003", "advertising-004", "advertising-005", "advertising-006", "advertising-007", "advertising-008"], "total": 7, "thumbs": ["hotel-airport-advertising/review_files/advertising-002-t.jpg", "hotel-airport-advertising/review_files/advertising-003-t.jpg", "hotel-airport-advertising/review_files/advertising-004-t.jpg", "hotel-airport-advertising/review_files/advertising-005-t.jpg"], "tag": "Media kit · 7 designs"}, {"folder": "year-in-review", "name": "Year in Review Infographics", "store": "webook_review_year-in-review-infographics", "keys": ["tactileplayful-001", "tactileplayful-002", "tactileplayful-003", "expressivedynamic-001", "expressivedynamic-002", "expressivedynamic-003", "mixedmedia-001", "mixedmedia-002", "mixedmedia-003", "digitalpulse-001", "digitalpulse-002", "digitalpulse-003", "editorialcollage-001", "editorialcollage-002", "editorialcollage-003"], "total": 15, "thumbs": ["year-in-review/review_files/tactileplayful-001-t.jpg", "year-in-review/review_files/tactileplayful-002-t.jpg", "year-in-review/review_files/tactileplayful-003-t.jpg", "year-in-review/review_files/expressivedynamic-001-t.jpg"], "tag": "5 directions · 15 designs"}, {"folder": "saudi-national-day", "name": "Saudi National Day — Vertical", "store": "webook_review_snd-vertical", "keys": ["route01-002", "route01-003", "route01-004", "route01-005", "route01-006", "route01-007", "route01-008", "route01-009", "r2-route02-002", "r2-route02-003", "r2-route02-004", "r2-route02-005", "r2-route02-006", "r2-route02-007"], "total": 14, "thumbs": ["saudi-national-day/review_files/route01-002-t.jpg", "saudi-national-day/review_files/route01-003-t.jpg", "saudi-national-day/review_files/route01-004-t.jpg", "saudi-national-day/review_files/route01-005-t.jpg"], "tag": "2 routes · 14 designs"}, {"folder": "national-day-merchandise", "name": "National Day Merchandise", "store": "webook_review_v2", "keys": ["16OY7fYeldoivnfnW_Jgyz-pFJsBfelIw", "1NvB8vid-7hwL2vPs9Fdj3S_p-DJ4yeCX", "1bMrv78RmwF4ngMStY9wiz9ti1DeeuttS", "1YEOJRinikAKk9b8dJfLos3MY8GOqvywR", "1siRA-ThKojNUqw4moyBG2QY1vJrVRcMn", "1NBM3_WXcTOCzdwFRgwwTRq2at4u4TKcB", "13truw2roWj1_4vfkB85DB0GKrzRSriH9", "15dIjNk6Cj77mOug1-FEMPp8TOov8ii3i", "1wN8zH4GM8AT1N4y2__1Jl661aWqc-5bQ", "1vAaQIpC4VbNiv2SSjE4Ocx3qS3xIzyGP", "10MVaWAGcKyO3v4FNhhgI7ylj-1WyHyVH", "1V53xew1Vsldy531Aw8x7bF1WGXNXiLy9", "1N5nadc64DsfEQdZn2kEFmePax8ecNdsq", "1yvp4LGe3NrYwRbDQf6vrW5ktdf-KXRsx", "1OiHVxOEsYnprqCX3cxHbjlw-85mwUfnC", "17YVJCeOWkhqBkGbtidawpr5bJvRdbGej", "1JPc1euqSin_uwGHtXf2zCFiR2NO92FSL", "1dg5UzP1WJs43qA2gAOcpTbB0oRhsERIt", "14oydOqsqvBMO7YINCSr8nBXLl9jlsFfj", "1M64D43WvWkhdLg8Nd6zj6GJ9jeEcXCi-", "1O67Y6KWtDkV_hh6KnWNHP835g8C4l5gs", "1o7vPHAsjwO2iQ8hj-C9_n-P62ACuwWYM", "16Ua8k1wGjpm6Ypn1ANFXuxwzoXwoFgNQ", "1FRWLroVSInq4Jm3dxj9GCunVwGwVNXw3", "1kNbGl3KKmwwUaBARCP6piJkpcg0J_bfp", "1-ukoriyntjIavUYE51dTR_1DyfPGXf74", "1vIIKDw6rPr_SkX9AifQEOspJuLv6hkhE"], "total": 27, "thumbs": ["https://lh3.googleusercontent.com/d/16OY7fYeldoivnfnW_Jgyz-pFJsBfelIw=w300", "https://lh3.googleusercontent.com/d/1NvB8vid-7hwL2vPs9Fdj3S_p-DJ4yeCX=w300", "https://lh3.googleusercontent.com/d/1bMrv78RmwF4ngMStY9wiz9ti1DeeuttS=w300", "https://lh3.googleusercontent.com/d/1YEOJRinikAKk9b8dJfLos3MY8GOqvywR=w300"], "tag": "ND & KSA series · 27 designs"}];
+
+function decisionsFor(s){
+  let all = {};
+  try { all = JSON.parse(localStorage.getItem(s.store)) || {}; } catch(e) {}
+  /* Count only this deck's items — a store key could in principle be shared. */
+  const mine = {};
+  s.keys.forEach(k => { if (all[k]) mine[k] = all[k]; });
+  return mine;
+}
+
+function render(){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  let gY = 0, gR = 0, gN = 0, designs = 0;
+  const rows = SUBJECTS.map((s, i) => {
+    const d = decisionsFor(s), done = Object.keys(d).length;
+    Object.values(d).forEach(x => { if (x.v === 'approved') gY++; else if (x.v === 'rejected') gN++; else gR++; });
+    designs += s.total;
+    return {s, i, done, finished: done === s.total};
+  });
+  /* What still needs him goes first; finished work sinks, order otherwise kept. */
+  rows.sort((a, b) => (a.finished - b.finished) || (a.i - b.i));
+
+  rows.forEach(({s, done}) => {
+    const pct = Math.round(done / s.total * 100);
+    const state = done === 0 ? '' : (done === s.total ? 'done' : 'live');
+    const label = done === 0 ? 'Not started' : (done === s.total ? 'Reviewed' : 'In review');
+    const cta = done === 0 ? 'Start' : (done < s.total ? 'Resume' : 'Review again');
+    const el = document.createElement('div');
+    el.className = 'proj';
+    el.innerHTML =
+      '<div class="top"><span class="pill ' + state + '"><i></i>' + label + '</span></div>' +
+      '<h2 class="serif"></h2>' +
+      '<div class="thumbs"></div>' +
+      '<div class="bar"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="mono">' + done + ' of ' + s.total + ' reviewed</div>' +
+      '<div class="foot"><span class="mono"></span>' +
+      '<a class="open' + (done ? ' ghost' : '') + '" href="' + s.folder + '/">' + cta + ' &rarr;</a></div>';
+    el.querySelector('h2').textContent = s.name;
+    el.querySelector('.foot .mono').textContent = s.tag;
+    const th = el.querySelector('.thumbs');
+    s.thumbs.forEach(u => {
+      const box = document.createElement('div'), im = document.createElement('img');
+      im.loading = 'lazy'; im.alt = ''; im.src = u;
+      box.appendChild(im); th.appendChild(box);
+    });
+    list.appendChild(el);
+  });
+
+  document.getElementById('hubCount').textContent =
+    SUBJECTS.length + ' presentations · ' + designs + ' designs';
+  document.getElementById('gY').textContent = gY;
+  document.getElementById('gR').textContent = gR;
+  document.getElementById('gN').textContent = gN;
+}
+
+render();
+/* Coming back from a deck via the back button can restore this page from the
+   cache without re-running scripts; repaint so the progress is current. */
+window.addEventListener('pageshow', render);
+</script>
+</body>
+</html>
